@@ -1,0 +1,409 @@
+{
+  "project": "Static LABS - Port Manager",
+  "version": "1.0.0",
+  "description": "Centralized port assignment, health monitoring, and project management system",
+  
+  "database": {
+    "type": "SQLite",
+    "tables": {
+      "projects": {
+        "description": "Master registry of all projects",
+        "columns": {
+          "id": {
+            "type": "TEXT PRIMARY KEY",
+            "description": "Unique project identifier (nanoid)",
+            "example": "proj_aBc123XyZ"
+          },
+          "name": {
+            "type": "TEXT UNIQUE NOT NULL",
+            "description": "Project display name",
+            "example": "marvelous-misfits-stream"
+          },
+          "assignedPort": {
+            "type": "INTEGER UNIQUE",
+            "description": "Assigned port number (null if unassigned)",
+            "example": 3100
+          },
+          "techStack": {
+            "type": "TEXT",
+            "description": "Tech stack identifier (node, python, golang, mixed, etc)",
+            "example": "node"
+          },
+          "iconUrl": {
+            "type": "TEXT",
+            "description": "URL or path to project icon for dashboard",
+            "example": "/icons/marvelous-misfits.png"
+          },
+          "status": {
+            "type": "TEXT",
+            "description": "Current status",
+            "enum": ["unassigned", "idle", "running", "unhealthy", "stalled"],
+            "example": "running"
+          },
+          "lastHeartbeat": {
+            "type": "DATETIME",
+            "description": "Last timestamp health check was successful",
+            "example": "2025-01-15T14:32:55Z"
+          },
+          "healthCheckUrl": {
+            "type": "TEXT",
+            "description": "Endpoint the manager will poll for health (e.g., /health)",
+            "example": "http://localhost:3100/health"
+          },
+          "createdAt": {
+            "type": "DATETIME DEFAULT CURRENT_TIMESTAMP",
+            "description": "When project was registered"
+          },
+          "updatedAt": {
+            "type": "DATETIME DEFAULT CURRENT_TIMESTAMP",
+            "description": "Last update timestamp"
+          }
+        }
+      },
+      "healthHistory": {
+        "description": "Historical health check logs for trending and debugging",
+        "columns": {
+          "id": {
+            "type": "TEXT PRIMARY KEY"
+          },
+          "projectId": {
+            "type": "TEXT FOREIGN KEY REFERENCES projects(id)"
+          },
+          "status": {
+            "type": "TEXT",
+            "enum": ["healthy", "slow", "unhealthy", "timeout"]
+          },
+          "responseTime": {
+            "type": "INTEGER",
+            "description": "Response time in milliseconds"
+          },
+          "error": {
+            "type": "TEXT",
+            "description": "Error message if health check failed"
+          },
+          "timestamp": {
+            "type": "DATETIME DEFAULT CURRENT_TIMESTAMP"
+          }
+        }
+      },
+      "portPool": {
+        "description": "Available and reserved ports",
+        "columns": {
+          "port": {
+            "type": "INTEGER PRIMARY KEY"
+          },
+          "isAvailable": {
+            "type": "BOOLEAN DEFAULT TRUE"
+          },
+          "assignedToProjectId": {
+            "type": "TEXT FOREIGN KEY REFERENCES projects(id)"
+          }
+        }
+      }
+    }
+  },
+
+  "api": {
+    "baseUrl": "http://localhost:3001",
+    "endpoints": {
+      "projects": {
+        "listAll": {
+          "method": "GET",
+          "path": "/api/projects",
+          "description": "Get all registered projects with current status",
+          "response": {
+            "status": 200,
+            "body": {
+              "success": true,
+              "data": [
+                {
+                  "id": "proj_aBc123XyZ",
+                  "name": "marvelous-misfits-stream",
+                  "assignedPort": 3100,
+                  "techStack": "node",
+                  "iconUrl": "/icons/marvelous-misfits.png",
+                  "status": "running",
+                  "lastHeartbeat": "2025-01-15T14:32:55Z",
+                  "isHealthy": true,
+                  "responseTime": 45
+                }
+              ]
+            }
+          }
+        },
+        "getProject": {
+          "method": "GET",
+          "path": "/api/projects/:projectId",
+          "description": "Get details for a specific project",
+          "response": {
+            "status": 200,
+            "body": {
+              "success": true,
+              "data": {
+                "id": "proj_aBc123XyZ",
+                "name": "marvelous-misfits-stream",
+                "assignedPort": 3100,
+                "techStack": "node",
+                "iconUrl": "/icons/marvelous-misfits.png",
+                "status": "running",
+                "lastHeartbeat": "2025-01-15T14:32:55Z",
+                "healthCheckUrl": "http://localhost:3100/health",
+                "createdAt": "2025-01-10T09:00:00Z",
+                "updatedAt": "2025-01-15T14:32:55Z"
+              }
+            }
+          }
+        },
+        "createProject": {
+          "method": "POST",
+          "path": "/api/projects",
+          "description": "Register a new project",
+          "requestBody": {
+            "name": "marvelous-misfits-stream",
+            "techStack": "node",
+            "iconUrl": "/icons/marvelous-misfits.png",
+            "healthCheckUrl": "http://localhost:3100/health"
+          },
+          "response": {
+            "status": 201,
+            "body": {
+              "success": true,
+              "data": {
+                "id": "proj_aBc123XyZ",
+                "name": "marvelous-misfits-stream",
+                "assignedPort": null,
+                "status": "unassigned"
+              }
+            }
+          }
+        },
+        "updateProject": {
+          "method": "PATCH",
+          "path": "/api/projects/:projectId",
+          "description": "Update project details (name, icon, health check URL)",
+          "requestBody": {
+            "iconUrl": "/icons/new-icon.png",
+            "healthCheckUrl": "http://localhost:3100/status"
+          },
+          "response": {
+            "status": 200,
+            "body": {
+              "success": true,
+              "data": {}
+            }
+          }
+        },
+        "deleteProject": {
+          "method": "DELETE",
+          "path": "/api/projects/:projectId",
+          "description": "Unregister a project and free its port",
+          "response": {
+            "status": 204,
+            "body": null
+          }
+        }
+      },
+
+      "ports": {
+        "assignPort": {
+          "method": "POST",
+          "path": "/api/ports/assign",
+          "description": "Assign a port to a project (auto-select or manual override)",
+          "requestBody": {
+            "projectId": "proj_aBc123XyZ",
+            "preferredPort": 3100
+          },
+          "response": {
+            "status": 200,
+            "body": {
+              "success": true,
+              "data": {
+                "projectId": "proj_aBc123XyZ",
+                "assignedPort": 3100,
+                "message": "Port assigned successfully"
+              }
+            }
+          }
+        },
+        "getNextAvailable": {
+          "method": "GET",
+          "path": "/api/ports/next-available",
+          "description": "Get the next available port without assigning it",
+          "response": {
+            "status": 200,
+            "body": {
+              "success": true,
+              "data": {
+                "nextAvailablePort": 3115
+              }
+            }
+          }
+        },
+        "releasePort": {
+          "method": "POST",
+          "path": "/api/ports/release/:port",
+          "description": "Free up a port and unassign from project",
+          "response": {
+            "status": 200,
+            "body": {
+              "success": true,
+              "data": {
+                "port": 3100,
+                "releasedFrom": "proj_aBc123XyZ"
+              }
+            }
+          }
+        },
+        "getPortStatus": {
+          "method": "GET",
+          "path": "/api/ports/:port",
+          "description": "Check if a port is available or assigned",
+          "response": {
+            "status": 200,
+            "body": {
+              "success": true,
+              "data": {
+                "port": 3100,
+                "isAvailable": false,
+                "assignedToProjectId": "proj_aBc123XyZ",
+                "assignedToProjectName": "marvelous-misfits-stream"
+              }
+            }
+          }
+        }
+      },
+
+      "health": {
+        "checkAll": {
+          "method": "POST",
+          "path": "/api/health/check-all",
+          "description": "Manually trigger health checks for all projects",
+          "response": {
+            "status": 200,
+            "body": {
+              "success": true,
+              "data": {
+                "checked": 5,
+                "healthy": 4,
+                "unhealthy": 1,
+                "results": [
+                  {
+                    "projectId": "proj_aBc123XyZ",
+                    "name": "marvelous-misfits-stream",
+                    "status": "healthy",
+                    "responseTime": 45,
+                    "lastHeartbeat": "2025-01-15T14:32:55Z"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "checkProject": {
+          "method": "POST",
+          "path": "/api/health/check/:projectId",
+          "description": "Check health of a specific project",
+          "response": {
+            "status": 200,
+            "body": {
+              "success": true,
+              "data": {
+                "projectId": "proj_aBc123XyZ",
+                "status": "healthy",
+                "responseTime": 45,
+                "timestamp": "2025-01-15T14:32:55Z"
+              }
+            }
+          }
+        },
+        "getHistory": {
+          "method": "GET",
+          "path": "/api/health/history/:projectId",
+          "description": "Get health check history for a project (last 100 checks)",
+          "queryParams": {
+            "limit": {
+              "type": "integer",
+              "default": 100,
+              "max": 500
+            },
+            "hours": {
+              "type": "integer",
+              "description": "Only return checks from last N hours",
+              "example": 24
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": {
+              "success": true,
+              "data": [
+                {
+                  "timestamp": "2025-01-15T14:32:55Z",
+                  "status": "healthy",
+                  "responseTime": 45
+                }
+              ]
+            }
+          }
+        }
+      },
+
+      "dashboard": {
+        "getDashboardData": {
+          "method": "GET",
+          "path": "/api/dashboard",
+          "description": "Get complete dashboard view (all projects + health summary)",
+          "response": {
+            "status": 200,
+            "body": {
+              "success": true,
+              "data": {
+                "summary": {
+                  "totalProjects": 5,
+                  "runningProjects": 4,
+                  "unhealthyProjects": 1,
+                  "stallledProjects": 0
+                },
+                "projects": [
+                  {
+                    "id": "proj_aBc123XyZ",
+                    "name": "marvelous-misfits-stream",
+                    "assignedPort": 3100,
+                    "techStack": "node",
+                    "iconUrl": "/icons/marvelous-misfits.png",
+                    "status": "running",
+                    "healthStatus": "healthy",
+                    "lastHeartbeat": "2025-01-15T14:32:55Z",
+                    "responseTime": 45
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+
+  "configuration": {
+    "portRange": {
+      "min": 3100,
+      "max": 3199,
+      "description": "Range of ports available for assignment"
+    },
+    "healthCheckInterval": {
+      "value": 30,
+      "unit": "seconds",
+      "description": "How often manager polls project health endpoints"
+    },
+    "healthCheckTimeout": {
+      "value": 5,
+      "unit": "seconds",
+      "description": "Timeout for health check requests"
+    },
+    "managerPort": {
+      "default": 3001,
+      "envVar": "PORT_MANAGER_PORT"
+    }
+  }
+}

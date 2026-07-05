@@ -1,0 +1,39 @@
+{
+  "static": {
+    "version": "1.0.0"
+  },
+  "project": {
+    "name": "static-labs",
+    "displayName": "Static Labs",
+    "description": "",
+    "author": "Malcolm Xavior Seven",
+    "version": "0.1.0",
+    "created": "2026-06-29T18:55:03.998Z",
+    "updated": "2026-06-29T18:55:03.998Z"
+  },
+  "stack": {
+    "type": "other",
+    "framework": "",
+    "language": "other",
+    "runtime": "other"
+  },
+  "port": {
+    "assigned": 3100,
+    "preferred": null,
+    "openUrl": null,
+    "healthCheckUrl": null
+  },
+  "status": {
+    "current": "idle",
+    "lastHealthCheck": null,
+    "lastDeploy": null
+  },
+  "scripts": {
+    "dev": null,
+    "build": null,
+    "start": null,
+    "test": null
+  },
+  "tags": [],
+  "notes": ""
+}

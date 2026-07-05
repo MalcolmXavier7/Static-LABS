@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Build output
+dist/
+build/
+out/
+**/dist/
+**/build/
+
+# Runtime data — local SQLite registry, logs
+port-manager/data/
+*.db
+*.log
+logs/
+
+# Env / secrets
+.env
+.env.local
+**/.env
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Icons generated at runtime
+port-manager/public/icons/*.png

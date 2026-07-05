@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Barlow', Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: #f5f7fa;
+}
+
+@keyframes st-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(30,174,219,0.5); }
+  70%  { box-shadow: 0 0 0 8px rgba(30,174,219,0); }
+  100% { box-shadow: 0 0 0 0 rgba(30,174,219,0); }
+}
+@keyframes st-pulse-red {
+  0%   { box-shadow: 0 0 0 0 rgba(200,27,58,0.55); }
+  60%  { box-shadow: 0 0 0 8px rgba(200,27,58,0); }
+  100% { box-shadow: 0 0 0 0 rgba(200,27,58,0); }
+}
+@keyframes st-pulse-amber {
+  0%   { box-shadow: 0 0 0 0 rgba(245,200,0,0.45); }
+  80%  { box-shadow: 0 0 0 8px rgba(245,200,0,0); }
+  100% { box-shadow: 0 0 0 0 rgba(245,200,0,0); }
+}
+@keyframes st-banner-in {
+  from { transform: translateY(-8px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+@keyframes st-card-in {
+  from { transform: scale(0.95); opacity: 0; }
+  to   { transform: scale(1);    opacity: 1; }
+}
+@keyframes st-spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes st-window-glow {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.75; }
+}
+@keyframes st-window-flicker {
+  0%, 100% { opacity: 1; }
+  42%       { opacity: 0.9; }
+  44%       { opacity: 0.3; }
+  48%       { opacity: 1; }
+  76%       { opacity: 0.85; }
+  78%       { opacity: 0.4; }
+  82%       { opacity: 1; }
+}
+@keyframes st-window-alarm {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.25; }
+}
+
+@keyframes st-panel-in {
+  from { transform: translateX(48px); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+
+.card-new { animation: st-card-in 300ms ease-out; }
+.banner-in { animation: st-banner-in 200ms ease-out; }
+.panel-in { animation: st-panel-in 220ms cubic-bezier(0.2, 0.8, 0.2, 1); }

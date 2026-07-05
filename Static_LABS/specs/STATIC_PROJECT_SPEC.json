@@ -1,0 +1,74 @@
+{
+  "$schema": "static.project.json",
+  "description": "Static LABS project manifest — lives in every project folder managed by Static LABS",
+  "version": "1.0.0",
+
+  "template": {
+    "static": {
+      "version": "1.0.0",
+      "description": "Static LABS manifest version"
+    },
+    "project": {
+      "name": "my-project",
+      "displayName": "My Project",
+      "description": "Short description of what this project does",
+      "author": "Malcolm Xavior Seven",
+      "version": "0.1.0",
+      "created": "2026-06-29T00:00:00Z",
+      "updated": "2026-06-29T00:00:00Z"
+    },
+    "stack": {
+      "type": "node",
+      "framework": "express",
+      "language": "typescript",
+      "runtime": "node"
+    },
+    "port": {
+      "assigned": null,
+      "preferred": null,
+      "openUrl": null,
+      "healthCheckUrl": null
+    },
+    "status": {
+      "current": "unassigned",
+      "lastHealthCheck": null,
+      "lastDeploy": null
+    },
+    "scripts": {
+      "dev": "npm run dev",
+      "build": "npm run build",
+      "start": "npm start",
+      "test": null
+    },
+    "tags": [],
+    "notes": ""
+  },
+
+  "fields": {
+    "static.version": "Manifest schema version",
+    "project.name": "Kebab-case unique identifier",
+    "project.displayName": "Human-readable name shown in dashboard",
+    "project.description": "What the project does",
+    "project.author": "Who created it",
+    "project.version": "Project version (semver)",
+    "project.created": "ISO timestamp when first registered",
+    "project.updated": "ISO timestamp of last change",
+    "stack.type": "Tech stack: node, python, golang, rust, dotnet, java, mixed, static, other",
+    "stack.framework": "Framework: express, nextjs, vite, flask, django, gin, etc.",
+    "stack.language": "Primary language: typescript, javascript, python, go, rust",
+    "stack.runtime": "Runtime: node, python, go, cargo, dotnet",
+    "port.assigned": "Port number assigned by Static LABS (managed by system)",
+    "port.preferred": "Preferred port number (user override)",
+    "port.openUrl": "Custom URL for the Open button (overrides localhost:port)",
+    "port.healthCheckUrl": "Health check endpoint URL",
+    "status.current": "Current status: unassigned, idle, running, unhealthy, stalled",
+    "status.lastHealthCheck": "ISO timestamp of last health check",
+    "status.lastDeploy": "ISO timestamp of last deploy",
+    "scripts.dev": "Command to start in dev mode",
+    "scripts.build": "Command to build for production",
+    "scripts.start": "Command to start in production mode",
+    "scripts.test": "Command to run tests",
+    "tags": "Array of tags for filtering/grouping",
+    "notes": "Free-form notes about the project"
+  }
+}

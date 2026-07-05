@@ -1,0 +1,40 @@
+{
+  "name": "static-labs-port-manager",
+  "version": "1.0.0",
+  "description": "Centralized port assignment and health monitoring service",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
+  "keywords": [
+    "port-manager",
+    "local-dev",
+    "health-monitoring"
+  ],
+  "author": "Static LABS",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "sql.js": "^1.10.0",
+    "nanoid": "^4.0.2",
+    "node-cron": "^3.0.2",
+    "dotenv": "^16.3.1",
+    "pino": "^8.17.2",
+    "pino-pretty": "^10.3.1",
+    "cors": "^2.8.5",
+    "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.6",
+    "@types/express": "^4.17.21",
+    "@types/cors": "^2.8.17",
+    "@types/node-cron": "^3.0.11",
+    "typescript": "^5.3.3",
+    "tsx": "^4.7.0"
+  }
+}
