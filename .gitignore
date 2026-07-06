@@ -28,3 +28,9 @@ Thumbs.db
 
 # Icons generated at runtime
 port-manager/public/icons/*.png
+
+# Local-only design scaffolding and planning notes (kept off the public repo)
+UI/
+DESIGN.md
+PLAN_88.md
+StaticLABS.ico
